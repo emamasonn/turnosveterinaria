@@ -3,12 +3,11 @@ import Header from './componentes/Header'
 import AgregarCita from './componentes/AgregarCita'
 import ListaCita from './componentes/ListaCitas';
 
+import { Provider } from 'react-redux';
+import store from './store';
+
 class App extends Component {
 
-
-  state = {
-    citas: []
-  }
 
   //el componente ya cargo
   componentDidMount(){
@@ -23,46 +22,27 @@ class App extends Component {
     localStorage.setItem('citas', JSON.stringify(this.state.citas));
   }
 
-  crearCita = (nuevaCita) => {
-    const citas = [...this.state.citas, nuevaCita]
-
-    this.setState({
-      citas: citas
-    });
-    console.log(citas);
-    
-  }
-
-  borrarCita = (id) => {
-      //leer el state
-      const citasActuales = [...this.state.citas]
-      //borrar el elemento del state
-      const citas = citasActuales.filter(cita => cita.id !== id);
-      //Actualizar el state
-
-      this.setState({ citas: citas});
-  }
+  
 
   render(){
     return (
+      <Provider store={store}>
       <div className="container">
         <Header
           titulo ={'Administrador de Pacientes de Veterinaria'}
         />
         <div className="row">
           <div className="col-md-6">
-            <AgregarCita
-              crearCita = {this.crearCita}
-            />
+            <AgregarCita />
           </div>
           <div className="col-md-6">
             <ListaCita 
-              citas={this.state.citas}
               borrarCita={this.borrarCita}
             />
           </div>
         </div>
       </div>
+      </Provider>
     );
   }
 }

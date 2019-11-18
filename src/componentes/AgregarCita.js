@@ -2,8 +2,15 @@ import React, {Component} from 'react';
 import uuid from 'uuid';
 import PropTypes from 'prop-types'
 
+import { connect } from 'react-redux';
+import { agregarCitas } from '../actions/citasActions';
+import { mostrarError } from '../actions/errorActions'
+
 class AgregarCita extends Component {
 
+    componentDidMount(){
+        this.props.mostrarError(false)
+    }
     //ref
 
     nombreMascotaRef = React.createRef();
@@ -11,10 +18,6 @@ class AgregarCita extends Component {
     fechaRef = React.createRef();
     horaRef = React.createRef();
     sintomasRef = React.createRef();
-
-    state = {
-        error: false
-    }
 
     crearNuevaCita = (e) =>{
         e.preventDefault();
@@ -26,10 +29,7 @@ class AgregarCita extends Component {
         const sintomas = this.sintomasRef.current.value;
         
         if(mascota === '' || propietario === '' || fecha === '' || hora === '' || sintomas === ''){
-            this.setState({
-                error: true
-            });
-            
+            this.props.mostrarError(true)
         }else{
             const nuevaCita = {
                 id: uuid(),
@@ -40,16 +40,14 @@ class AgregarCita extends Component {
                 sintomas: sintomas
             }
 
-            this.props.crearCita(nuevaCita);
+            this.props.agregarCitas(nuevaCita);
 
             e.currentTarget.reset();
-            this.setState({
-                error: false
-            });
+            this.props.mostrarError(false)
         }
     }
     render() {
-        const existeError = this.state.error;
+        const existeError = this.props.error;
         return (
             <div className="card mt-5">
                 <div className="card-body">
@@ -107,7 +105,12 @@ class AgregarCita extends Component {
 
 
 AgregarCita.propTypes = {
-    crearCita: PropTypes.func.isRequired
+    agregarCitas: PropTypes.func.isRequired
 }
 
-export default AgregarCita;
+const mapStateToProps = state => ({
+    citas: state.citas.citas,
+    error: state.error.error
+})
+
+export default connect(mapStateToProps, { agregarCitas, mostrarError }) (AgregarCita);
